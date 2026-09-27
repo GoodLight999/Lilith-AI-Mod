@@ -15,10 +15,11 @@ internal static partial class DialogueManagerUpdatePatch
         PoseContext poseContext,
         bool japaneseVoiceMode)
     {
-        var endpoint = Plugin.GatewayEndpoint.Value.Trim();
         var model = Plugin.GatewayModel.Value.Trim();
         var key = Plugin.GatewayApiKey.Value.Trim();
         var protocol = NormalizeGatewayProtocol(Plugin.GatewayProtocol.Value);
+        var preset = ResolveGatewayPreset();
+        var endpoint = ResolveGatewayEndpoint(preset, protocol);
 
         if (string.IsNullOrWhiteSpace(endpoint))
             throw new InvalidOperationException("Gateway endpoint is empty.");
@@ -70,8 +71,59 @@ internal static partial class DialogueManagerUpdatePatch
             _ => ParseChatCompletionsReply(document.RootElement)
         };
 
-        Plugin.PluginLog.LogInfo($"Gateway completed: protocol={protocol}, rawChars={rawReply.Length}.");
+        Plugin.PluginLog.LogInfo($"Gateway completed: preset={preset}, protocol={protocol}, rawChars={rawReply.Length}.");
         CompleteAiReply(rawReply, userText, poseContext, japaneseVoiceMode);
+    }
+
+    private static string ResolveGatewayPreset()
+    {
+        var provider = Plugin.AiProvider.Value?.Trim() ?? string.Empty;
+        if (string.Equals(provider, "OpenRouter", StringComparison.OrdinalIgnoreCase))
+            return "OpenRouter";
+        if (string.Equals(provider, "CommandCode", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "Command Code", StringComparison.OrdinalIgnoreCase))
+            return "CommandCode";
+        if (string.Equals(provider, "EXPLABS", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "ExperientialLabs", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "Experiential Labs", StringComparison.OrdinalIgnoreCase))
+            return "EXPLABS";
+        if (string.Equals(provider, "OpenCodeGo", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "OpenCode Go", StringComparison.OrdinalIgnoreCase))
+            return "OpenCodeGo";
+
+        var preset = Plugin.GatewayPreset.Value?.Trim() ?? string.Empty;
+        if (string.Equals(preset, "CommandCode", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(preset, "Command Code", StringComparison.OrdinalIgnoreCase))
+            return "CommandCode";
+        if (string.Equals(preset, "EXPLABS", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(preset, "ExperientialLabs", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(preset, "Experiential Labs", StringComparison.OrdinalIgnoreCase))
+            return "EXPLABS";
+        if (string.Equals(preset, "OpenCodeGo", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(preset, "OpenCode Go", StringComparison.OrdinalIgnoreCase))
+            return "OpenCodeGo";
+        if (string.Equals(preset, "Custom", StringComparison.OrdinalIgnoreCase))
+            return "Custom";
+        return "OpenRouter";
+    }
+
+    private static string ResolveGatewayEndpoint(string preset, string protocol)
+    {
+        var suffix = protocol switch
+        {
+            "Responses" => "responses",
+            "AnthropicMessages" => "messages",
+            _ => "chat/completions"
+        };
+
+        return preset switch
+        {
+            "CommandCode" => $"https://api.commandcode.ai/provider/v1/{suffix}",
+            "EXPLABS" => $"https://api.experientiallabs.ai/v1/{suffix}",
+            "OpenCodeGo" => $"https://opencode.ai/zen/go/v1/{suffix}",
+            "Custom" => Plugin.GatewayEndpoint.Value.Trim(),
+            _ => $"https://openrouter.ai/api/v1/{suffix}"
+        };
     }
 
     private static string NormalizeGatewayProtocol(string? protocol)
