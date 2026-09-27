@@ -43,11 +43,14 @@ internal static class TrayMenuLocalizationPatch
             __result = DialogueManagerUpdatePatch.LocalizedText("加入 API KEY", "加入 API KEY", "APIキーを追加", "Add API Key");
             return false;
         }
-        if (tableEntryKey is "Gemini" or "Qwen" or "OpenAI" or "DeepSeek")
+        if (tableEntryKey is "Gemini" or "Qwen" or "OpenAI" or "DeepSeek" or "Gateway")
         {
-            __result = tableEntryKey == "Qwen"
-                ? DialogueManagerUpdatePatch.LocalizedText("千問", "千问", "Qwen（千問）", "Qwen")
-                : tableEntryKey;
+            __result = tableEntryKey switch
+            {
+                "Qwen" => DialogueManagerUpdatePatch.LocalizedText("千問", "千问", "Qwen（千問）", "Qwen"),
+                "Gateway" => DialogueManagerUpdatePatch.LocalizedText("Gateway／自訂", "Gateway／自定义", "Gateway／カスタム", "Gateway / Custom"),
+                _ => tableEntryKey
+            };
             return false;
         }
         return true;
