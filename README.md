@@ -69,9 +69,9 @@ This unofficial AI extension for *The NOexistenceN of Lilith* keeps Lilith's qui
 
 Qwen availability, free quotas, and billing requirements depend on the player's Alibaba Cloud Model Studio account and region. OpenAI/DeepSeek model names, response formats, quotas, and regional availability have not been fully validated.
 
-本機 GPT-SoVITS 語音合成可朗讀已成功取得的文字回覆，因此 OpenAI／DeepSeek 的文字聊天若正常回傳，仍可能播放合成語音；但這不代表該供應商的整體流程已完成測試。模型名稱、API 規格、地區限制或服務商更新也可能影響實驗性相容層。
+開發版的日文動態語音預設使用本機 Irodori-TTS；中文與相容模式仍可使用 GPT-SoVITS。另新增可切換 Chat Completions／Responses／Anthropic Messages 的 Gateway，可連接 OpenRouter、Command Code、EXPLABS、OpenCode Go 等相容服務。
 
-Local GPT-SoVITS can speak a successfully returned text reply, so OpenAI/DeepSeek responses may still produce synthesized speech. This does not mean their complete workflows have been validated. Model names, API behavior, regional availability, or provider updates may also affect the experimental compatibility layer.
+The development branch uses local Irodori-TTS as the default Japanese dynamic voice backend, while GPT-SoVITS remains available for Chinese and compatibility. A multi-protocol Gateway also supports compatible OpenRouter, Command Code, EXPLABS, OpenCode Go, and custom endpoints.
 
 ## 🍓 一鍵安裝 / One-click setup
 
@@ -171,9 +171,9 @@ Available only after the player explicitly enables the setting:
 
 “Advanced Computer Controls” are disabled by default. When enabled, only reviewed allowlisted actions are available—never file deletion, emptying the Recycle Bin, shutdown/restart, closing or terminating apps, arbitrary PowerShell/CMD, privilege elevation, password/API key/OTP access, clipboard reading, arbitrary typing, or arbitrary shortcuts.
 
-AI 對話與語音辨識會依玩家選擇傳送至相應服務商；GPT-SoVITS 語音合成則在本機 `127.0.0.1` 運行。
+AI 對話與語音辨識會依玩家選擇傳送至相應服務商；Irodori-TTS／GPT-SoVITS 語音合成則在本機 `127.0.0.1` 運行。
 
-AI chat and speech recognition are sent to the provider selected by the player. GPT-SoVITS voice synthesis runs locally on `127.0.0.1`.
+AI chat and speech recognition are sent to the provider selected by the player. Irodori-TTS and GPT-SoVITS synthesis run locally on `127.0.0.1`.
 
 ## ✧ 系統需求 / Requirements
 
