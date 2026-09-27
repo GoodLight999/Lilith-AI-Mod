@@ -23,6 +23,12 @@ jobs:
         run: dotnet build src/LilithVoiceHost/LilithVoiceHost.csproj -c Release
       - name: Run gateway contract tests
         run: dotnet run --project src/LilithGatewayContractTests/LilithGatewayContractTests.csproj -c Release
+      - name: Parse local build script
+        shell: pwsh
+        run: |
+          $text = Get-Content scripts/build-dev.ps1 -Raw
+          [void][ScriptBlock]::Create($text)
+          Write-Host "PowerShell syntax OK."
 
   validate-source:
     runs-on: ubuntu-latest
