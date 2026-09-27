@@ -1,0 +1,63 @@
+name: dev-next-ci
+
+on:
+  push:
+    branches:
+      - dev/next
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-tools:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build installer
+        run: dotnet build src/LilithModInstaller/LilithModInstaller.csproj -c Release
+      - name: Build voice host
+        run: dotnet build src/LilithVoiceHost/LilithVoiceHost.csproj -c Release
+
+  validate-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate gateway and Irodori source invariants
+        shell: python
+        run: |
+          from pathlib import Path
+
+          gateway = Path("src/LilithTextInjector/Ai/DialogueManagerUpdatePatch.Ai.Gateway.cs").read_text(encoding="utf-8")
+          config = Path("src/LilithTextInjector/Config/PluginConfig.cs").read_text(encoding="utf-8")
+          tts = Path("src/LilithTextInjector/Voice/DialogueManagerUpdatePatch.Tts.cs").read_text(encoding="utf-8")
+          host = Path("src/LilithVoiceHost/Program.cs").read_text(encoding="utf-8")
+
+          required = {
+              "gateway ChatCompletions": '"ChatCompletions"',
+              "gateway Responses": '"Responses"',
+              "gateway AnthropicMessages": '"AnthropicMessages"',
+              "Irodori config": '"Irodori"',
+              "Irodori endpoint": "/v1/audio/speech",
+              "Irodori request": 'model = "irodori-tts"',
+              "voice provider arg": "--provider",
+          }
+
+          haystacks = {
+              "gateway ChatCompletions": gateway,
+              "gateway Responses": gateway,
+              "gateway AnthropicMessages": gateway,
+              "Irodori config": config,
+              "Irodori endpoint": config,
+              "Irodori request": tts,
+              "voice provider arg": host,
+          }
+
+          missing = [name for name, needle in required.items() if needle not in haystacks[name]]
+          if missing:
+              raise SystemExit("Missing expected source invariants: " + ", ".join(missing))
+
+          print("Source invariants OK.")
