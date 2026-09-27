@@ -246,6 +246,7 @@ internal sealed class InstallerForm : Form
                 if (!File.Exists(Path.Combine(runtime, "LilithVoiceHost.exe")))
                     throw new FileNotFoundException("The dynamic voice package does not contain LilithVoiceHost.exe.");
                 await PrepareVoiceRuntimeAsync(runtime);
+                await PrepareIrodoriRuntimeAsync(runtime);
             }
 
             var manifestDirectory = Path.Combine(game, "BepInEx", "data", "LilithTextInjector");
@@ -438,6 +439,77 @@ internal sealed class InstallerForm : Form
         SetStatus(L("正在安裝語音辨識與合成相依元件…", "正在安装语音识别与合成依赖组件…", "音声合成の依存コンポーネントをインストール中…", "Installing voice synthesis dependencies…"));
         await RunProcessAsync(uv, $"pip install --python \"{python}\" -r \"{requirements}\"", runtime);
         File.WriteAllText(ready, DateTimeOffset.Now.ToString("O"));
+    }
+
+    private async Task PrepareIrodoriRuntimeAsync(string runtime)
+    {
+        const string serverCommit = "61012c760f22f7b4a6c21c5c5f8f9e148120b6f9";
+        var serverRoot = Path.Combine(runtime, "Irodori-TTS-Server");
+        var ready = Path.Combine(serverRoot, ".lilith-ready");
+        var python = Path.Combine(serverRoot, ".venv", "Scripts", "python.exe");
+        if (File.Exists(ready) && File.Exists(python))
+            return;
+
+        var uv = Path.Combine(runtime, "uv.exe");
+        if (!File.Exists(uv))
+            throw new FileNotFoundException("Irodori setup requires the bundled uv.exe.", uv);
+
+        if (!File.Exists(Path.Combine(serverRoot, "pyproject.toml")))
+        {
+            SetStatus(L(
+                "正在下載 Irodori-TTS Server…",
+                "正在下载 Irodori-TTS Server…",
+                "Irodori-TTS Serverをダウンロード中…",
+                "Downloading Irodori-TTS Server…"));
+
+            var archive = Path.Combine(runtime, $"irodori-server-{serverCommit}.zip");
+            if (!File.Exists(archive))
+            {
+                using var client = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+                var url = $"https://github.com/Aratako/Irodori-TTS-Server/archive/{serverCommit}.zip";
+                using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+                await using var source = await response.Content.ReadAsStreamAsync();
+                await using var destination = new FileStream(archive, FileMode.Create, FileAccess.Write, FileShare.None);
+                await source.CopyToAsync(destination);
+                await destination.FlushAsync();
+            }
+
+            var staging = Path.Combine(runtime, ".irodori-staging");
+            if (Directory.Exists(staging))
+                Directory.Delete(staging, true);
+            Directory.CreateDirectory(staging);
+            ZipFile.ExtractToDirectory(archive, staging);
+
+            var extractedRoot = Directory.GetDirectories(staging).SingleOrDefault()
+                ?? throw new InvalidDataException("Irodori archive did not contain one root directory.");
+            if (Directory.Exists(serverRoot))
+                Directory.Delete(serverRoot, true);
+            Directory.Move(extractedRoot, serverRoot);
+            Directory.Delete(staging, true);
+        }
+
+        var backend = VoiceHost.HasNvidiaGpu() ? "cu128" : "cpu";
+        SetStatus(backend == "cu128"
+            ? L(
+                "Irodori-TTS の NVIDIA CUDA 環境を準備中…",
+                "正在准备 Irodori-TTS NVIDIA CUDA 环境…",
+                "Irodori-TTSのNVIDIA CUDA環境を準備中…",
+                "Preparing the Irodori-TTS NVIDIA CUDA environment…")
+            : L(
+                "Irodori-TTS の CPU 環境を準備中…",
+                "正在准备 Irodori-TTS CPU 环境…",
+                "Irodori-TTSのCPU環境を準備中…",
+                "Preparing the Irodori-TTS CPU environment…"));
+
+        await RunProcessAsync(uv, $"sync --extra {backend}", serverRoot);
+        if (!File.Exists(python))
+            throw new FileNotFoundException("Irodori-TTS virtual environment was not created.", python);
+
+        File.WriteAllText(
+            ready,
+            $"server={serverCommit}{Environment.NewLine}backend={backend}{Environment.NewLine}prepared={DateTimeOffset.Now:O}",
+            new UTF8Encoding(false));
     }
 
     private static async Task RunProcessAsync(string file, string arguments, string workingDirectory)
