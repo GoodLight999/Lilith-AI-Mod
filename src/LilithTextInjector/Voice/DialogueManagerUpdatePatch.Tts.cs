@@ -124,7 +124,7 @@ internal static partial class DialogueManagerUpdatePatch
                 {
                     using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
                     request.Content = new StringContent(payloadJson, Encoding.UTF8, "application/json");
-                    using var response = await Http.SendAsync(request).ConfigureAwait(false);
+                    using var response = await VoiceHttp.SendAsync(request).ConfigureAwait(false);
                     if (!response.IsSuccessStatusCode)
                     {
                         var error = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
