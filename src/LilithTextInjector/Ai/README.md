@@ -47,6 +47,66 @@ model. Note that push-to-talk speech recognition (`F6`) and Gemini/Qwen-style de
 tool calling are not wired up for `LocalAI` yet — text chat only, same level of support
 OpenAI/DeepSeek currently have.
 
+## Generic gateway provider
+
+Set `AI.Provider = Gateway` to connect Lilith to a hosted gateway without adding
+provider-specific code. The gateway adapter supports three wire protocols:
+
+- `ChatCompletions` — OpenAI `/chat/completions`
+- `Responses` — OpenAI `/responses`
+- `AnthropicMessages` — Anthropic `/messages`
+
+Configuration lives under `[Gateway]`:
+
+```ini
+[AI]
+Provider = Gateway
+
+[Gateway]
+Protocol = ChatCompletions
+Endpoint = https://openrouter.ai/api/v1/chat/completions
+Model = your/model-id
+ApiKey = ...
+AuthHeader = Authorization
+AuthScheme = Bearer
+ExtraHeadersJson = {}
+```
+
+Examples of currently supported service shapes:
+
+```ini
+# OpenRouter
+Protocol = ChatCompletions
+Endpoint = https://openrouter.ai/api/v1/chat/completions
+
+# Command Code GOAT / Provider API
+Protocol = ChatCompletions
+Endpoint = https://api.commandcode.ai/provider/v1/chat/completions
+# For Claude models:
+# Protocol = AnthropicMessages
+# Endpoint = https://api.commandcode.ai/provider/v1/messages
+
+# Experiential Labs
+Protocol = ChatCompletions
+Endpoint = https://api.experientiallabs.ai/v1/chat/completions
+# Responses is also available at:
+# Endpoint = https://api.experientiallabs.ai/v1/responses
+
+# OpenCode Go (select the endpoint required by the chosen model)
+Protocol = ChatCompletions
+Endpoint = https://opencode.ai/zen/go/v1/chat/completions
+# Some models instead use:
+# Protocol = Responses
+# Endpoint = https://opencode.ai/zen/go/v1/responses
+# or:
+# Protocol = AnthropicMessages
+# Endpoint = https://opencode.ai/zen/go/v1/messages
+```
+
+For providers that require a raw API key header, set for example
+`AuthHeader = x-api-key` and leave `AuthScheme` empty. Provider-specific optional
+headers can be supplied as a JSON object in `ExtraHeadersJson`.
+
 ## Adding a provider with its own request/response format
 
 If your target doesn't speak the OpenAI format (for example a provider with its own
