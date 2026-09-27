@@ -66,11 +66,9 @@ internal static partial class DialogueManagerUpdatePatch
         _ = RequestSpeechAsync(speechText.Length > 0 ? speechText : reply, reaction, poseContext.VoiceStyle, japaneseVoiceMode);
     }
 
-    // Recognized provider identifiers, one per registered IAiProvider implementation
-    // (see Ai/Providers/AiProviderRegistry.cs). To add a new provider, register it there
-    // and add its accepted config-value aliases here; everything else in the chat
-    // pipeline (SubmitAiInput, RequestGeminiAsync's dispatch, GetActiveChatApiKey) reads
-    // this single normalized name.
+    // Normalize user/config aliases to the small set of provider identifiers handled by
+    // RequestAiAsync. Keep aliases here so the rest of the chat pipeline has one source
+    // of truth for provider selection.
     private static string NormalizeAiProvider(string? provider)
     {
         if (string.Equals(provider, "Qwen", StringComparison.OrdinalIgnoreCase)
