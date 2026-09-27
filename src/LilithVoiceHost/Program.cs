@@ -138,8 +138,14 @@ internal static class Program
     {
         if (await PortOpenAsync(port, 300))
         {
-            await LogAsync(log, $"Irodori endpoint on port {port} is already available; using the existing service.");
-            return;
+            if (await IrodoriHealthyAsync(port))
+            {
+                await LogAsync(log, $"Irodori endpoint on port {port} is already healthy; using the existing service.");
+                return;
+            }
+
+            throw new InvalidOperationException(
+                $"Port {port} is already occupied, but the service did not answer as Irodori-TTS. Stop the conflicting process or change the configured endpoint.");
         }
 
         var serverRoot = Path.Combine(root, "Irodori-TTS-Server");
@@ -177,6 +183,20 @@ internal static class Program
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         owned.Add(process);
+    }
+
+    private static async Task<bool> IrodoriHealthyAsync(int port)
+    {
+        try
+        {
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
+            using var response = await client.GetAsync($"http://127.0.0.1:{port}/health");
+            return response.IsSuccessStatusCode;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static bool HasNvidiaGpu()
