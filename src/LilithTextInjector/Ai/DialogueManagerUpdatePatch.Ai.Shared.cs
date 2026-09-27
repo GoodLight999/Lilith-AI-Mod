@@ -78,6 +78,15 @@ internal static partial class DialogueManagerUpdatePatch
             || string.Equals(provider, "DashScope", StringComparison.OrdinalIgnoreCase)) return "Qwen";
         if (string.Equals(provider, "OpenAI", StringComparison.OrdinalIgnoreCase)) return "OpenAI";
         if (string.Equals(provider, "DeepSeek", StringComparison.OrdinalIgnoreCase)) return "DeepSeek";
+        if (string.Equals(provider, "Gateway", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "Custom", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "OpenRouter", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "CommandCode", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "Command Code", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "EXPLABS", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "ExperientialLabs", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "OpenCodeGo", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(provider, "OpenCode Go", StringComparison.OrdinalIgnoreCase)) return "Gateway";
         if (string.Equals(provider, "LocalAI", StringComparison.OrdinalIgnoreCase)
             || string.Equals(provider, "Local", StringComparison.OrdinalIgnoreCase)
             || string.Equals(provider, "Ollama", StringComparison.OrdinalIgnoreCase)
@@ -93,6 +102,9 @@ internal static partial class DialogueManagerUpdatePatch
             "Qwen" => Plugin.QwenApiKey.Value,
             "OpenAI" => Plugin.OpenAiApiKey.Value,
             "DeepSeek" => Plugin.DeepSeekApiKey.Value,
+            "Gateway" => string.IsNullOrWhiteSpace(Plugin.GatewayApiKey.Value)
+                ? Plugin.GatewayEndpoint.Value
+                : Plugin.GatewayApiKey.Value,
             // Most local/self-hosted servers (Ollama, LM Studio, llama.cpp, vLLM, ...) do not
             // require an API key. The endpoint URL stands in for "is this provider configured"
             // so the missing-API-key gate in SubmitAiInput does not block local usage.
