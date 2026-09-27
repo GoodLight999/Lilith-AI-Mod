@@ -62,7 +62,7 @@ environment available to validate it against. Splitting by `partial class` file 
   sitting.
 
 The one place a real interface-style extension point was worth adding is the AI provider
-dispatch, because that's genuinely one clean seam (`RequestGeminiAsync`'s dispatch to
+dispatch, because that's genuinely one clean seam (`RequestAiAsync`'s dispatch to
 `RequestQwenResponsesAsync` / `RequestOpenAiCompatibleAsync`). See `Ai/README.md`.
 
 ## Adding a new feature area
