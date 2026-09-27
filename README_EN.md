@@ -19,7 +19,7 @@ This is an unofficial community MOD for the desktop companion game *The NOexiste
 
 Qwen now has a tested integration using `qwen3.7-plus` for chat and `qwen3-asr-flash` for speech recognition. It supports provider-native web search for current information and deterministic local routing for explicit application, media, screenshot, and reviewed computer-control commands. Availability, free quota, and billing requirements depend on the player’s Alibaba Cloud Model Studio account and region.
 
-OpenAI and DeepSeek currently use an **experimental text-chat compatibility layer**. Basic requests are implemented, and local GPT-SoVITS may speak a reply that was returned successfully, but these providers have not been tested end to end across their available models, response formats, quotas, regional restrictions, or future API changes. Provider-native web search and function calling are not integrated for them; only some explicit local commands may still be recognized by the MOD itself.
+The development branch also includes a generic Gateway for OpenRouter, Command Code, EXPLABS, OpenCode Go, and other compatible services. It can switch between OpenAI Chat Completions, OpenAI Responses, and Anthropic Messages wire formats. Provider-native web search and function calling are not yet unified across these services; some explicit local commands are still handled by the MOD itself.
 
 `F6` speech recognition follows the selected provider for Gemini and Qwen. OpenAI and DeepSeek currently use Gemini transcription and therefore still require a separately saved Gemini API key for voice input.
 
@@ -55,7 +55,7 @@ Updates will not overwrite existing API keys, chat memory, key bindings, or play
 ## Privacy
 
 * Conversation text and speech-recognition recordings are sent to the AI provider selected by the player and are subject to that provider’s terms of service and privacy policy.
-* GPT-SoVITS voice synthesis runs locally on `127.0.0.1` and does not accept external network connections.
+* Japanese dynamic speech uses Irodori-TTS by default. GPT-SoVITS remains available for Chinese and as a Japanese compatibility backend. Both local services bind to `127.0.0.1`.
 * Automatic weather location uses the approximate city location derived from the player’s public IP address. The MOD does not store the IP address.
 * Screenshots are stored only in the player’s `Pictures\Lilith Screenshots` folder and are not automatically uploaded to any model.
 * The MOD does not provide access to unrestricted PowerShell or CMD commands, file deletion, password retrieval, or clipboard contents.
@@ -83,7 +83,7 @@ Updates will not overwrite existing API keys, chat memory, key bindings, or play
 
 This MOD is an unofficial, non-commercial game modification independently created by a player. It is provided solely for game-related community use and personal entertainment.
 
-This MOD is not official game content and is not affiliated with, operated by, authorized by, sponsored by, endorsed by, or otherwise associated with the game’s developer, publisher, character rights holders, sound recording producers, original voice actors, Google, OpenAI, DeepSeek, BepInEx, GPT-SoVITS, or any other related technology, software, or service provider.
+This MOD is not official game content and is not affiliated with, operated by, authorized by, sponsored by, endorsed by, or otherwise associated with the game’s developer, publisher, character rights holders, sound recording producers, original voice actors, Google, OpenAI, DeepSeek, BepInEx, GPT-SoVITS, Irodori-TTS, or any other related technology, software, or service provider.
 
 This MOD does not represent the views or positions of any of the individuals, organizations, or companies listed above.
 
