@@ -32,7 +32,7 @@ internal static class Program
 
 internal sealed class ReleaseManifest
 {
-    public string Version { get; set; } = "0.1.1-rc2";
+    public string Version { get; set; } = "0.1.1-rc4";
     public Dictionary<string, PackageSpec> Packages { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
@@ -54,7 +54,7 @@ internal sealed class InstalledManifest
 internal sealed class InstallerForm : Form
 {
     private const string AppId = "4643090";
-    private const string DefaultManifestUrl = "https://github.com/mimimi6666/Lilith-AI-Mod/releases/download/v0.1.1-rc2/release-manifest.json";
+    private const string DefaultManifestUrl = "https://github.com/mimimi6666/Lilith-AI-Mod/releases/download/v0.1.1-rc4/release-manifest.json";
     private readonly bool _zhTraditional;
     private readonly bool _zhSimplified;
     private readonly bool _japanese;
@@ -112,7 +112,7 @@ internal sealed class InstallerForm : Form
         _voicePack.Text = L("完整中／日文補充台詞語音（約 301 MB）", "完整中／日文补充台词语音（约 301 MB）", "中国語／日本語の追加台詞音声（約301 MB）", "Complete Chinese/Japanese supplemental dialogue voices (~301 MB)");
         _voicePack.Checked = true;
         _voicePack.Bounds = new Rectangle(32, 180, 610, 28);
-        _dynamicVoice.Text = L("AI 動態語音（模型約 1.98 GB；首次會自動建立推理環境）", "AI 动态语音（模型约 1.98 GB；首次会自动建立推理环境）", "AI動的音声（モデル約1.98 GB・初回に推論環境を自動構築）", "Dynamic AI voice (~1.98 GB models; builds its inference environment on first install)");
+        _dynamicVoice.Text = L("AI 動態語音（GPT-SoVITS 套件＋Irodori；首次會建立／下載推理環境）", "AI 动态语音（GPT-SoVITS 包＋Irodori；首次会建立／下载推理环境）", "AI動的音声（GPT-SoVITS＋Irodori・初回に推論環境とモデルを準備）", "Dynamic AI voice (GPT-SoVITS + Irodori; prepares runtimes/models on first install)");
         _dynamicVoice.Checked = true;
         _dynamicVoice.Bounds = new Rectangle(32, 215, 620, 28);
         _launch.Text = L("安裝完成後啟動桌寵", "安装完成后启动桌宠", "完了後にデスクトップペットを起動", "Launch the desktop pet after installation");
