@@ -1,0 +1,19 @@
+name: inspect-upstream-core
+
+on:
+  push:
+    branches:
+      - dev/next
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download upstream core package
+        run: |
+          curl -fL --retry 3             https://github.com/mimimi6666/Lilith-AI-Mod/releases/download/v0.1.1-rc4/core.zip             -o core.zip
+      - name: List dependency-looking files
+        run: |
+          unzip -Z1 core.zip | grep -Ei '(^|/)(interop|BepInEx|Assembly-CSharp|UnityEngine|0Harmony|Il2Cpp).*\.dll$' | sort | tee dependency-files.txt
+          echo "---- count ----"
+          wc -l dependency-files.txt
