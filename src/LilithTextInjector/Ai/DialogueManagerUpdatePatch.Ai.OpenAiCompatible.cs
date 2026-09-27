@@ -48,6 +48,12 @@ internal static partial class DialogueManagerUpdatePatch
     private static async Task RequestOpenAiCompatibleAsync(string provider, string systemInstruction, string userText,
         PoseContext poseContext, bool japaneseVoiceMode)
     {
+        if (string.Equals(provider, "Gateway", StringComparison.Ordinal))
+        {
+            await RequestGatewayAsync(systemInstruction, userText, poseContext, japaneseVoiceMode).ConfigureAwait(false);
+            return;
+        }
+
         var endpoint = provider switch
         {
             "DeepSeek" => "https://api.deepseek.com/chat/completions",
