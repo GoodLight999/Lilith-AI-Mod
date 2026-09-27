@@ -21,6 +21,8 @@ jobs:
         run: dotnet build src/LilithModInstaller/LilithModInstaller.csproj -c Release
       - name: Build voice host
         run: dotnet build src/LilithVoiceHost/LilithVoiceHost.csproj -c Release
+      - name: Run gateway contract tests
+        run: dotnet run --project src/LilithGatewayContractTests/LilithGatewayContractTests.csproj -c Release
 
   validate-source:
     runs-on: ubuntu-latest
