@@ -57,6 +57,9 @@ internal static partial class DialogueManagerUpdatePatch
     private static float _delayedSpeechPlayAt = -1f;
     private static float _voicePitchResetAt = -1f;
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(90) };
+    // Irodori may need to download/load model assets on the first synthesis. Keep voice
+    // traffic separate so a long first load does not weaken timeouts for chat/weather.
+    private static readonly HttpClient VoiceHttp = new() { Timeout = TimeSpan.FromSeconds(360) };
     private static bool _requestInFlight;
     private static bool _transcriptionInFlight;
     private static bool _aiPagesAwaitingAdvance;
