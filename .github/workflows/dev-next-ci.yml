@@ -34,6 +34,7 @@ jobs:
           from pathlib import Path
 
           gateway = Path("src/LilithTextInjector/Ai/DialogueManagerUpdatePatch.Ai.Gateway.cs").read_text(encoding="utf-8")
+          gateway_wire = Path("src/LilithTextInjector/Ai/GatewayWire.cs").read_text(encoding="utf-8")
           config = Path("src/LilithTextInjector/Config/PluginConfig.cs").read_text(encoding="utf-8")
           tts = Path("src/LilithTextInjector/Voice/DialogueManagerUpdatePatch.Tts.cs").read_text(encoding="utf-8")
           host = Path("src/LilithVoiceHost/Program.cs").read_text(encoding="utf-8")
@@ -49,9 +50,9 @@ jobs:
           }
 
           haystacks = {
-              "gateway ChatCompletions": gateway,
-              "gateway Responses": gateway,
-              "gateway AnthropicMessages": gateway,
+              "gateway ChatCompletions": gateway_wire,
+              "gateway Responses": gateway_wire,
+              "gateway AnthropicMessages": gateway_wire,
               "Irodori config": config,
               "Irodori endpoint": config,
               "Irodori request": tts,
