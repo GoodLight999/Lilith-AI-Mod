@@ -62,6 +62,7 @@ public partial class Plugin
     internal static ConfigEntry<string> LocalAiBaseUrl = null!;
     internal static ConfigEntry<string> LocalAiModel = null!;
     internal static ConfigEntry<string> LocalAiApiKey = null!;
+    internal static ConfigEntry<string> GatewayPreset = null!;
     internal static ConfigEntry<string> GatewayProtocol = null!;
     internal static ConfigEntry<string> GatewayEndpoint = null!;
     internal static ConfigEntry<string> GatewayModel = null!;
@@ -151,10 +152,12 @@ public partial class Plugin
             "Model name as expected by the local server, e.g. an Ollama or LM Studio model tag.");
         LocalAiApiKey = Config.Bind("LocalAI", "ApiKey", string.Empty,
             "Optional API key/bearer token. Leave empty for local servers that do not require one.");
+        GatewayPreset = Config.Bind("Gateway", "Preset", "OpenRouter",
+            "Endpoint preset: OpenRouter, CommandCode, EXPLABS, OpenCodeGo, or Custom.");
         GatewayProtocol = Config.Bind("Gateway", "Protocol", "ChatCompletions",
             "Wire protocol: ChatCompletions, Responses, or AnthropicMessages.");
-        GatewayEndpoint = Config.Bind("Gateway", "Endpoint", "https://openrouter.ai/api/v1/chat/completions",
-            "Full HTTP endpoint. Use this for OpenRouter, Command Code GOAT, EXPLABS, OpenCode Go, or another compatible gateway.");
+        GatewayEndpoint = Config.Bind("Gateway", "Endpoint", string.Empty,
+            "Full HTTP endpoint used only when Gateway.Preset = Custom.");
         GatewayModel = Config.Bind("Gateway", "Model", string.Empty,
             "Model identifier expected by the configured gateway.");
         GatewayApiKey = Config.Bind("Gateway", "ApiKey", string.Empty,
