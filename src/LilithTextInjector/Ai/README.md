@@ -12,7 +12,7 @@ turning its reply into something the rest of the mod can speak/display.
 | `DialogueManagerUpdatePatch.Ai.OpenAiCompatible.cs` | One shared implementation for every provider that speaks the OpenAI `/chat/completions` wire format: OpenAI, DeepSeek, and **LocalAI** (any self-hosted server: Ollama, LM Studio, llama.cpp server, vLLM, text-generation-webui, ...). |
 | `DialogueManagerUpdatePatch.Ai.Shared.cs` | Provider-agnostic helpers: `NormalizeAiProvider`, `GetActiveChatApiKey`, reply cleanup, bilingual (text/speech) reply parsing, emotion selection, native reaction lookup. |
 
-Despite its name, `RequestGeminiAsync` in `Ai.Gemini.cs` is the actual entry point for
+Despite its name, `RequestAiAsync` in `Ai.Gemini.cs` is the actual entry point for
 **every** provider — it builds the one shared system prompt, then near the bottom does:
 
 ```csharp
@@ -126,7 +126,7 @@ provider instead of stretching `RequestOpenAiCompatibleAsync`:
    memory, emotion selection, and speech synthesis for every provider.
 3. **Register the name** in `NormalizeAiProvider` (`Ai.Shared.cs`) and add a case to
    `GetActiveChatApiKey` there too.
-4. **Add one dispatch branch** in `RequestGeminiAsync` (`Ai.Gemini.cs`), next to the
+4. **Add one dispatch branch** in `RequestAiAsync` (`Ai.Gemini.cs`), next to the
    existing `Qwen`/OpenAI-compatible branches, calling your new method.
 
 That's the entire surface area — nothing outside `Ai/` and `Config/PluginConfig.cs` needs
@@ -135,7 +135,7 @@ to change for a new text-chat provider.
 ## What is intentionally *not* provider-specific here
 
 `Core/DialogueManagerUpdatePatch.Core.cs` (`SubmitAiInput`) only ever calls
-`RequestGeminiAsync`; it does not know or care which provider ends up handling the
+`RequestAiAsync`; it does not know or care which provider ends up handling the
 request. Voice synthesis (`Voice/DialogueManagerUpdatePatch.Tts.cs`), conversation memory
 (`Memory/DialogueManagerUpdatePatch.Memory.cs`), and AI-generated notes
 (`Memory/DialogueManagerUpdatePatch.Notes.cs`) are likewise provider-agnostic — they only
