@@ -54,7 +54,11 @@ internal static partial class DialogueManagerUpdatePatch
             trayTable.AddEntry("OpenAI", "OpenAI");
             trayTable.AddEntry("DeepSeek", "DeepSeek");
             trayTable.AddEntry("Gateway", ApiKeyText("Gateway／自訂", "Gateway／自定义", "Gateway／カスタム", "Gateway / Custom"));
-            var providers = new[] { "Gemini", "Qwen", "OpenAI", "DeepSeek", "Gateway" };
+            trayTable.AddEntry("OpenRouter", "OpenRouter");
+            trayTable.AddEntry("CommandCode", "Command Code");
+            trayTable.AddEntry("EXPLABS", "EXPLABS");
+            trayTable.AddEntry("OpenCodeGo", "OpenCode Go");
+            var providers = new[] { "Gemini", "Qwen", "OpenAI", "DeepSeek", "OpenRouter", "CommandCode", "EXPLABS", "OpenCodeGo", "Gateway" };
             var children = new Il2CppReferenceArray<ShowSystemTray.MenuItemData>(providers.Length);
             for (var index = 0; index < providers.Length; index++)
             {
@@ -298,6 +302,10 @@ internal static partial class DialogueManagerUpdatePatch
                     Plugin.DeepSeekApiKey.Value = key;
                     break;
                 case "Gateway":
+                case "OpenRouter":
+                case "CommandCode":
+                case "EXPLABS":
+                case "OpenCodeGo":
                     Plugin.GatewayApiKey.Value = key;
                     break;
                 default:
