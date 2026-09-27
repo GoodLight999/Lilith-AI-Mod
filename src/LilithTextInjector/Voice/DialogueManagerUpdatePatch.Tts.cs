@@ -49,6 +49,17 @@ internal static partial class DialogueManagerUpdatePatch
                 ? "これは儀式でもあるの。君に私の存在を感じてもらうための儀式ね。"
                 : "你的選擇創造了我，所以我的存在本身就是你的善意。";
             var effectiveStyle = reaction?.Style ?? poseStyle;
+            var useIrodori = useJapanese && IsIrodoriJapaneseVoiceProvider();
+            if (useIrodori)
+            {
+                referencePath = effectiveStyle switch
+                {
+                    VoiceStyle.Excited when File.Exists(Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim()) => Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim(),
+                    VoiceStyle.Wronged when File.Exists(Plugin.JapaneseWrongedVoiceReferencePath.Value.Trim()) => Plugin.JapaneseWrongedVoiceReferencePath.Value.Trim(),
+                    VoiceStyle.Sleepy when File.Exists(Plugin.JapaneseSleepyVoiceReferencePath.Value.Trim()) => Plugin.JapaneseSleepyVoiceReferencePath.Value.Trim(),
+                    _ => Plugin.JapaneseVoiceReferencePath.Value.Trim()
+                };
+            }
             var auxiliaryReferences = useJapanese ? effectiveStyle switch
             {
                 VoiceStyle.Excited => new[] { Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim() },
@@ -69,21 +80,41 @@ internal static partial class DialogueManagerUpdatePatch
                 return;
             }
 
-            var payload = new
+            object payload;
+            string endpoint;
+            if (useIrodori)
             {
-                text = speechText,
-                text_lang = useJapanese ? "ja" : "zh",
-                ref_audio_path = referencePath,
-                aux_ref_audio_paths = auxiliaryReferences,
-                prompt_lang = useJapanese ? "ja" : "zh",
-                prompt_text = promptText,
-                text_split_method = "cut0",
-                batch_size = 1,
-                media_type = "wav",
-                streaming_mode = false,
-                seed = 42
-            };
-            var endpoint = useJapanese ? Plugin.JapaneseVoiceEndpoint.Value.Trim() : Plugin.VoiceEndpoint.Value.Trim();
+                payload = new
+                {
+                    model = "irodori-tts",
+                    input = speechText,
+                    response_format = "wav",
+                    irodori = new
+                    {
+                        ref_wav = referencePath,
+                        seed = 42
+                    }
+                };
+                endpoint = Plugin.IrodoriVoiceEndpoint.Value.Trim();
+            }
+            else
+            {
+                payload = new
+                {
+                    text = speechText,
+                    text_lang = useJapanese ? "ja" : "zh",
+                    ref_audio_path = referencePath,
+                    aux_ref_audio_paths = auxiliaryReferences,
+                    prompt_lang = useJapanese ? "ja" : "zh",
+                    prompt_text = promptText,
+                    text_split_method = "cut0",
+                    batch_size = 1,
+                    media_type = "wav",
+                    streaming_mode = false,
+                    seed = 42
+                };
+                endpoint = useJapanese ? Plugin.JapaneseVoiceEndpoint.Value.Trim() : Plugin.VoiceEndpoint.Value.Trim();
+            }
             var payloadJson = JsonSerializer.Serialize(payload);
             var localEndpoint = IsLocalVoiceEndpoint(endpoint);
             var maximumAttempts = localEndpoint && Plugin.VoiceAutoStartLocalService.Value ? 7 : 1;
@@ -115,6 +146,11 @@ internal static partial class DialogueManagerUpdatePatch
         {
             Plugin.PluginLog.LogWarning($"Voice generation failed; text chat continues: {exception.Message}");
         }
+    }
+
+    private static bool IsIrodoriJapaneseVoiceProvider()
+    {
+        return string.Equals(Plugin.JapaneseVoiceProvider.Value.Trim(), "Irodori", StringComparison.OrdinalIgnoreCase);
     }
 
     private static bool IsLocalVoiceEndpoint(string endpoint)
