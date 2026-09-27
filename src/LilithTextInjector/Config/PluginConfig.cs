@@ -75,6 +75,8 @@ public partial class Plugin
     internal static ConfigEntry<string> WrongedVoiceReferencePath = null!;
     internal static ConfigEntry<string> SleepyVoiceReferencePath = null!;
     internal static ConfigEntry<string> JapaneseVoiceEndpoint = null!;
+    internal static ConfigEntry<string> JapaneseVoiceProvider = null!;
+    internal static ConfigEntry<string> IrodoriVoiceEndpoint = null!;
     internal static ConfigEntry<bool> JapaneseVoiceSelected = null!;
     internal static ConfigEntry<string> JapaneseVoiceReferencePath = null!;
     internal static ConfigEntry<string> JapaneseCalmAuxVoiceReferencePath = null!;
@@ -176,6 +178,10 @@ public partial class Plugin
             "Auxiliary reference WAV used while Lilith is sleeping, lying down, or yawning.");
         JapaneseVoiceEndpoint = Config.Bind("JapaneseVoice", "Endpoint", "http://127.0.0.1:9881/tts",
             "GPT-SoVITS endpoint for Japanese speech while the game's voice setting is Japanese.");
+        JapaneseVoiceProvider = Config.Bind("JapaneseVoice", "Provider", "Irodori",
+            "Japanese dynamic TTS backend. Use Irodori (default) or GPT-SoVITS.");
+        IrodoriVoiceEndpoint = Config.Bind("JapaneseVoice", "IrodoriEndpoint", "http://127.0.0.1:9881/v1/audio/speech",
+            "OpenAI-compatible Irodori-TTS speech endpoint used when JapaneseVoice.Provider = Irodori.");
         JapaneseVoiceSelected = Config.Bind("JapaneseVoice", "Selected", false,
             "Remember Japanese game/AI voice selection across restarts.");
         JapaneseVoiceReferencePath = Config.Bind("JapaneseVoice", "CalmReferencePath",
