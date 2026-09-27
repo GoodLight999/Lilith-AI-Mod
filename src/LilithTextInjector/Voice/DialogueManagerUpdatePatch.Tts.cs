@@ -50,16 +50,13 @@ internal static partial class DialogueManagerUpdatePatch
                 : "你的選擇創造了我，所以我的存在本身就是你的善意。";
             var effectiveStyle = reaction?.Style ?? poseStyle;
             var useIrodori = useJapanese && IsIrodoriJapaneseVoiceProvider();
-            if (useIrodori)
+            var irodoriStyleReference = useIrodori ? effectiveStyle switch
             {
-                referencePath = effectiveStyle switch
-                {
-                    VoiceStyle.Excited when File.Exists(Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim()) => Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim(),
-                    VoiceStyle.Wronged when File.Exists(Plugin.JapaneseWrongedVoiceReferencePath.Value.Trim()) => Plugin.JapaneseWrongedVoiceReferencePath.Value.Trim(),
-                    VoiceStyle.Sleepy when File.Exists(Plugin.JapaneseSleepyVoiceReferencePath.Value.Trim()) => Plugin.JapaneseSleepyVoiceReferencePath.Value.Trim(),
-                    _ => Plugin.JapaneseVoiceReferencePath.Value.Trim()
-                };
-            }
+                VoiceStyle.Excited => Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim(),
+                VoiceStyle.Wronged => Plugin.JapaneseWrongedVoiceReferencePath.Value.Trim(),
+                VoiceStyle.Sleepy => Plugin.JapaneseSleepyVoiceReferencePath.Value.Trim(),
+                _ => Plugin.JapaneseCalmAuxVoiceReferencePath.Value.Trim()
+            } : string.Empty;
             var auxiliaryReferences = useJapanese ? effectiveStyle switch
             {
                 VoiceStyle.Excited => new[] { Plugin.JapaneseExcitedVoiceReferencePath.Value.Trim() },
@@ -80,6 +77,13 @@ internal static partial class DialogueManagerUpdatePatch
                 return;
             }
 
+            var irodoriReferences = useIrodori
+                ? new[] { referencePath, irodoriStyleReference }
+                    .Where(path => !string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToArray()
+                : Array.Empty<string>();
+
             object payload;
             string endpoint;
             if (useIrodori)
@@ -91,7 +95,7 @@ internal static partial class DialogueManagerUpdatePatch
                     response_format = "wav",
                     irodori = new
                     {
-                        ref_wav = referencePath,
+                        ref_wavs = irodoriReferences,
                         seed = 42
                     }
                 };
