@@ -35,7 +35,7 @@ namespace LilithTextInjector;
 
 internal static partial class DialogueManagerUpdatePatch
 {
-    private static async Task RequestGeminiAsync(string userText, string playerName, PoseContext poseContext)
+    private static async Task RequestAiAsync(string userText, string playerName, PoseContext poseContext)
     {
         GeminiAgentSession? agentSession = null;
         try
