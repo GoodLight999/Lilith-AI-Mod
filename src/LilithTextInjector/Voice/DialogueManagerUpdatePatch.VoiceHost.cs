@@ -77,7 +77,10 @@ internal static partial class DialogueManagerUpdatePatch
 
         try
         {
-            var endpoint = (useJapanese ? Plugin.JapaneseVoiceEndpoint.Value : Plugin.VoiceEndpoint.Value).Trim();
+            var useIrodori = useJapanese && IsIrodoriJapaneseVoiceProvider();
+            var endpoint = (useJapanese
+                ? (useIrodori ? Plugin.IrodoriVoiceEndpoint.Value : Plugin.JapaneseVoiceEndpoint.Value)
+                : Plugin.VoiceEndpoint.Value).Trim();
             if (!endpoint.StartsWith("http://127.0.0.1:", StringComparison.OrdinalIgnoreCase))
                 return;
             _voiceHostLaunchAttempted = true;
@@ -90,7 +93,7 @@ internal static partial class DialogueManagerUpdatePatch
             var startInfo = new ProcessStartInfo
             {
                 FileName = hostPath,
-                Arguments = $"--voice-host --parent {Environment.ProcessId} --language {(useJapanese ? "ja" : "zh")}",
+                Arguments = $"--voice-host --parent {Environment.ProcessId} --language {(useJapanese ? "ja" : "zh")} --provider {(useIrodori ? "irodori" : "gpt-sovits")}",
                 WorkingDirectory = Path.GetDirectoryName(hostPath) ?? Paths.GameRootPath,
                 UseShellExecute = false,
                 CreateNoWindow = true,
@@ -101,7 +104,7 @@ internal static partial class DialogueManagerUpdatePatch
                 startInfo.Environment["DOTNET_ROOT"] = bundledDotnet;
             _voiceHostProcess = Process.Start(startInfo);
             _voiceHostJapaneseMode = useJapanese;
-            Plugin.PluginLog.LogInfo($"Started the bundled local {(useJapanese ? "Japanese" : "Chinese")} voice host without a console window.");
+            Plugin.PluginLog.LogInfo($"Started the bundled local {(useJapanese ? "Japanese" : "Chinese")} voice host ({(useIrodori ? "Irodori" : "GPT-SoVITS")}) without a console window.");
         }
         catch (Exception exception)
         {
