@@ -273,7 +273,7 @@ internal static partial class DialogueManagerUpdatePatch
             var playerName = Archive.Instance != null ? Archive.Instance.playerName : string.Empty;
             if (PlayerNameRule.IsUnsetName(playerName))
                 playerName = string.Empty;
-            _ = RequestGeminiAsync(submitted, playerName, CapturePoseContext());
+            _ = RequestAiAsync(submitted, playerName, CapturePoseContext());
         }
         Plugin.PluginLog.LogInfo($"Submitted AI input ({submitted.Length} chars).");
     }
