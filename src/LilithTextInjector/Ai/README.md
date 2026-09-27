@@ -63,8 +63,10 @@ Configuration lives under `[Gateway]`:
 Provider = Gateway
 
 [Gateway]
+Preset = OpenRouter
 Protocol = ChatCompletions
-Endpoint = https://openrouter.ai/api/v1/chat/completions
+# Endpoint is used only when Preset = Custom
+Endpoint =
 Model = your/model-id
 ApiKey = ...
 AuthHeader = Authorization
@@ -76,31 +78,30 @@ Examples of currently supported service shapes:
 
 ```ini
 # OpenRouter
+Preset = OpenRouter
 Protocol = ChatCompletions
-Endpoint = https://openrouter.ai/api/v1/chat/completions
 
 # Command Code GOAT / Provider API
+Preset = CommandCode
 Protocol = ChatCompletions
-Endpoint = https://api.commandcode.ai/provider/v1/chat/completions
-# For Claude models:
+# Claude models use:
 # Protocol = AnthropicMessages
-# Endpoint = https://api.commandcode.ai/provider/v1/messages
 
 # Experiential Labs
+Preset = EXPLABS
 Protocol = ChatCompletions
-Endpoint = https://api.experientiallabs.ai/v1/chat/completions
-# Responses is also available at:
-# Endpoint = https://api.experientiallabs.ai/v1/responses
+# Responses and Anthropic Messages are also supported by the gateway.
 
-# OpenCode Go (select the endpoint required by the chosen model)
+# OpenCode Go
+Preset = OpenCodeGo
+# Pick the protocol required by the selected model:
+#   ChatCompletions, Responses, or AnthropicMessages
 Protocol = ChatCompletions
-Endpoint = https://opencode.ai/zen/go/v1/chat/completions
-# Some models instead use:
-# Protocol = Responses
-# Endpoint = https://opencode.ai/zen/go/v1/responses
-# or:
-# Protocol = AnthropicMessages
-# Endpoint = https://opencode.ai/zen/go/v1/messages
+
+# Any other compatible service
+Preset = Custom
+Endpoint = https://example.invalid/v1/chat/completions
+Protocol = ChatCompletions
 ```
 
 For providers that require a raw API key header, set for example
