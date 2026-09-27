@@ -62,6 +62,13 @@ public partial class Plugin
     internal static ConfigEntry<string> LocalAiBaseUrl = null!;
     internal static ConfigEntry<string> LocalAiModel = null!;
     internal static ConfigEntry<string> LocalAiApiKey = null!;
+    internal static ConfigEntry<string> GatewayProtocol = null!;
+    internal static ConfigEntry<string> GatewayEndpoint = null!;
+    internal static ConfigEntry<string> GatewayModel = null!;
+    internal static ConfigEntry<string> GatewayApiKey = null!;
+    internal static ConfigEntry<string> GatewayAuthHeader = null!;
+    internal static ConfigEntry<string> GatewayAuthScheme = null!;
+    internal static ConfigEntry<string> GatewayExtraHeadersJson = null!;
     internal static ConfigEntry<string> PersonaPrompt = null!;
     internal static ConfigEntry<string> CharacterLore = null!;
     internal static ConfigEntry<string> EmotionGuidance = null!;
@@ -119,7 +126,7 @@ public partial class Plugin
         GeminiModel = Config.Bind("Gemini", "Model", "gemini-3.5-flash",
             "Gemini model code.");
         AiProvider = Config.Bind("AI", "Provider", "Gemini",
-            "Active chat provider: Gemini, Qwen, OpenAI, DeepSeek, or LocalAI (any self-hosted OpenAI-compatible server; see the [LocalAI] section below).");
+            "Active chat provider: Gemini, Qwen, OpenAI, DeepSeek, LocalAI, or Gateway. Gateway supports configurable Chat Completions, Responses, and Anthropic Messages wire protocols.");
         OpenAiApiKey = Config.Bind("OpenAI", "ApiKey", string.Empty,
             "OpenAI API key. Keep this file private.");
         OpenAiModel = Config.Bind("OpenAI", "Model", "gpt-4.1-mini",
@@ -144,6 +151,20 @@ public partial class Plugin
             "Model name as expected by the local server, e.g. an Ollama or LM Studio model tag.");
         LocalAiApiKey = Config.Bind("LocalAI", "ApiKey", string.Empty,
             "Optional API key/bearer token. Leave empty for local servers that do not require one.");
+        GatewayProtocol = Config.Bind("Gateway", "Protocol", "ChatCompletions",
+            "Wire protocol: ChatCompletions, Responses, or AnthropicMessages.");
+        GatewayEndpoint = Config.Bind("Gateway", "Endpoint", "https://openrouter.ai/api/v1/chat/completions",
+            "Full HTTP endpoint. Use this for OpenRouter, Command Code GOAT, EXPLABS, OpenCode Go, or another compatible gateway.");
+        GatewayModel = Config.Bind("Gateway", "Model", string.Empty,
+            "Model identifier expected by the configured gateway.");
+        GatewayApiKey = Config.Bind("Gateway", "ApiKey", string.Empty,
+            "Gateway API key. Keep this file private.");
+        GatewayAuthHeader = Config.Bind("Gateway", "AuthHeader", "Authorization",
+            "Authentication header name. Common values are Authorization and x-api-key.");
+        GatewayAuthScheme = Config.Bind("Gateway", "AuthScheme", "Bearer",
+            "Authentication scheme prefixed before the key. Leave empty for raw-key headers such as x-api-key.");
+        GatewayExtraHeadersJson = Config.Bind("Gateway", "ExtraHeadersJson", "{}",
+            "Optional JSON object of additional request headers, for example {\"HTTP-Referer\":\"https://example.invalid\",\"X-Title\":\"Lilith\"}.");
         PersonaPrompt = Config.Bind("Character", "Persona",
             DefaultPersonaZhHant,
             "System-style character prompt prepended to each request.");
